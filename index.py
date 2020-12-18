@@ -7,7 +7,7 @@ import time
 intents = discord.Intents.default()
 intents.members = True
 
-bot = commands.Bot(command_prefix='?', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
@@ -65,6 +65,14 @@ async def on_member_join(member: discord.Member):
 @bot.command()
 async def hi(ctx):
 	mbed = discord.Embed(description=f"{ctx.message.author.mention} Hola como estas?", color=0x36393F)
+	await ctx.send(embed=mbed)
+
+@bot.command()
+async def help(ctx):
+	mbed = discord.Embed(title=":robot: __Comandos__", color=0x36393F)
+	mbed.add_field(name=":hammer: Comandos de moderacion", value="`setautorole <@role>`\n`welcome`\n`purge`\n`kick`\n`ban`")
+	mbed.add_field(name=":video_game: Comandos de entretenimiento", value="`gay <@user>`\n`punch <@user>`\n`roll`\n`hug`\n`kiss`\n`kill`\n`8ball`", inline=False)
+	mbed.add_field(name=":moneybag: Economia", value="`work`\n`balance`\n**Solo moderadores**\n`add-money`\n`remove-money`")
 	await ctx.send(embed=mbed)
 
 @bot.command()
@@ -183,17 +191,13 @@ async def punch(ctx, user: discord.Member):
 		mbed = discord.Embed(description="No puedes golpearte a ti mismo", color=0x36393F)
 	else:
 		gifs = ['https://media.giphy.com/media/3xIxpCbXwoIlHGdfHA/giphy.gif', 'https://media2.giphy.com/media/3iyV9jWgQCLnSln00t/giphy.gif', 'https://media4.giphy.com/media/pVBXMhLmV1oJFzb8zl/giphy.gif']
-		mbed = discord.Embed(title=f'{ctx.author} golpeo a {user}', color=0x36393F)
+		mbed = discord.Embed(description=f'{ctx.author} golpeo a {user}', color=0x36393F)
 		mbed.set_image(url=random.choice(gifs))
 	await ctx.send(embed=mbed)
 
 @punch.error
 async def p_error(ctx, error):
 	mbed = discord.Embed(':x: No mencionaste a un usuario')
-
-@bot.command()
-async def kill(ctx, user: discord.Member):
-	await ctx.send(f'{ctx.author} Golpeo a {user}')
 
 @bot.command()
 @commands.has_permissions(manage_guild=True)
@@ -224,7 +228,6 @@ async def welcome(ctx):
 async def channel(ctx, channel: discord.TextChannel):
 	db = sqlite3.connect('main.sqlite')
 	c = db.cursor()
-	print(channel.id)
 	c.execute(f'SELECT channel_id FROM welcome WHERE guild_id = {ctx.guild.id}')
 	result = c.fetchone()
 	if result is None:
@@ -245,7 +248,6 @@ async def error(ctx, error):
 
 @welcome.command()
 async def message(ctx, *, args):
-	print(args)
 	mbed = discord.Embed(title=f':white_check_mark: Welcome message has been set to \n`{args}`', color=0x36393F)
 	db = sqlite3.connect('main.sqlite')
 	c = db.cursor()
@@ -261,5 +263,106 @@ async def message(ctx, *, args):
 		await ctx.send(embed=mbed)
 	c.execute(sql, val)
 	db.commit()
+
+@bot.command()
+async def kill(ctx, user: discord.Member):
+	if user.id == ctx.author.id:
+		await ctx.send('Oye, bro no lo hagas, no vale la pena :c')
+	elif user.id == bot.user.id:
+		await ctx.send('Que hice para merecer esto :,c')
+	else:
+		gifs = ['https://i.pinimg.com/originals/3c/ed/ee/3cedee4f8118855c83ea05463498f326.gif', 'https://www.icegif.com/wp-content/uploads/among-us-icegif-1.gif', 'https://media.tenor.com/images/d46c724d422714d738a84a51f1caf00b/tenor.gif', 'https://media1.tenor.com/images/361a7354f193af1b1ace5843dcaeeb02/tenor.gif?itemid=18599860']
+		mbed = discord.Embed(description=f":knife: {ctx.author} asesino a {user}", color=0x36393F)
+		mbed.set_image(url=random.choice(gifs))
+		await ctx.send(embed=mbed)
+
+@kill.error
+async def error(ctx, error):
+	await ctx.send('Debes mencionar a alguien')
+
+@bot.command()
+async def kiss(ctx, user: discord.Member):
+	images = ['https://i.ytimg.com/vi/41NEnHO7rGo/maxresdefault.jpg', 'https://64.media.tumblr.com/28fd3feae07b8f32355bad331d0ef6c7/tumblr_mhet2eDOOV1rec05yo1_500.gif', 'https://64.media.tumblr.com/73cdbd6176cffb703e3c0ad02ec926ea/tumblr_mr6zbgfJHJ1so0fjho6_500.gifv', 'https://ist5-1.filesor.com/pimpandhost.com/8/7/0/4/87047/6/p/F/F/6pFFT/giphyg.gif']
+	mbed = discord.Embed(description=f':heart: {ctx.author} beso a {user}', color=0x36393F)
+	mbed.set_image(url=random.choice(images))
+	await ctx.send(embed=mbed)
+
+@kiss.error
+async def error(ctx, error):
+	await ctx.send('Menciona al usuario que quieras besas 7u7')
+
+@bot.command()
+async def hug(ctx, user: discord.Member):
+	images = ['https://i.pinimg.com/originals/0a/16/52/0a1652de311806ce55820a7115993853.gif', 'https://media.tenor.com/images/cb9bffb9b0e88808fa156f2432233aa7/tenor.gif', 'https://media.tenor.com/images/f029c5ebf31f247eba1af1dc3a5f924e/tenor.gif', 'https://media.tenor.com/images/2bb9e56d8982c9e806d33aed404a62c0/tenor.gif']
+	mbed = discord.Embed(description=f':heart: {ctx.author} abrazo a {user}', color=0x36393F)
+	mbed.set_image(url=random.choice(images))
+	await ctx.send(embed=mbed)
+
+@hug.error
+async def error(ctx, error):
+	await ctx.send('Menciona al usuario que quieres abrazar :3')
+
+@bot.command(aliases=['8ball'])
+async def _8ball(ctx, *args):
+	question = " ".join(args)
+	respuestas = ['Posiblemente', 'Si', 'Por supuesto', 'Creo que si', 'No', 'Claro que no', 'Nunca']
+	mbed = discord.Embed(title=':8ball: __Minijuego 8ball__', color=0x36393F)
+	mbed.add_field(name=":question: Tu pregunta fue:", value=f'{question}', inline=False)
+	mbed.add_field(name=":page_facing_up: Mi respuesta es:", value=f'{random.choice(respuestas)}')
+	await ctx.send(embed=mbed)
+
+@_8ball.error
+async def error(ctx, error):
+	await ctx.send('Tienes que preguntar algo')
+
+@bot.command()
+@commands.has_permissions(kick_members=True)
+async def kick(ctx, user: discord.Member, *, args='No especifico una razon'):
+	reason = " ".join(args)
+	mbed = discord.Embed(title=":hammer: __Usuario kickeado correctamente__", color=0x36393F)
+	mbed.add_field(name='Usuario: ', value=user)
+	mbed.add_field(name='Razon: ', value=args, inline=False)
+	mbed.add_field(name='Moderador responsable: ', value=ctx.author)
+	try:
+		await user.send(embed=mbed)
+	except:
+		await ctx.send('Algo salio mal al avisarle al usuario')
+	try:
+		await user.kick(reason=reason)
+		await ctx.send(embed=mbed)
+	except:
+		await ctx.send('Algo salio mal en el proceso')
+
+@kick.error
+async def error(ctx, error):
+	if isinstance(error, commands.MissingPermissions):
+		await ctx.send('No tienes permisos para usar este comando')
+	else:
+		await ctx.send(error)
+
+@bot.command()
+@commands.has_permissions(ban_members=True)
+async def ban(ctx, user: discord.Member, *, args='No especifico una razon'):
+	reason = "".join(args)
+	mbed = discord.Embed(title=":hammer: __Usuario baneado correctamente__", color=0x36393F)
+	mbed.add_field(name='Usuario: ', value=user)
+	mbed.add_field(name='Razon: ', value=args, inline=False)
+	mbed.add_field(name='Moderador responsable: ', value=ctx.author)
+	try:
+		await user.send(embed=mbed)
+	except:
+		await ctx.send('Algo salio mal al avisarle al usuario')
+	try:
+		await user.ban(reason=reason)
+		await ctx.send(embed=mbed)
+	except:
+		await ctx.send('Algo salio mal en el proceso')
+
+@ban.error
+async def error(ctx, error):
+	if isinstance(error, commands.MissingPermissions):
+		await ctx.send('No tienes permisos para usar este comando')
+	else:
+		await ctx.send(error)
 
 bot.run(TOKEN)
